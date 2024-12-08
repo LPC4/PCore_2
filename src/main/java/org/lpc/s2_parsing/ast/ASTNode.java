@@ -17,6 +17,11 @@ public abstract class ASTNode {
         this.children.add(node);
     }
 
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
     public String toString(int depth) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");

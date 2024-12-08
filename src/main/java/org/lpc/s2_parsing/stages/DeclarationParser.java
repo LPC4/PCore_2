@@ -154,7 +154,6 @@ public class DeclarationParser {
         }
     }
 
-
     private FunctionDeclarationNode parseFunctionDeclaration() {
         consume(TokenType.FUNC, "Expected 'func' keyword at the beginning of the function declaration");
 

@@ -9,42 +9,42 @@ set booleanVariable: bit = 1;
 set characterVariable: char = 'a';
 set stringVariable: string = "Hello, World!";
 set variableWithFunctionCall: i32 = add(10, 20);
-set arrayVariable: [i32; MAX_SIZE] = {1, 2, 3, 4, 5};
-set arrayVariableWithFunctionCall: [i32; MAX_SIZE] = getArray();
+set arrayVariable: [i32, MAX_SIZE] = {1, 2, 3, 4, 5};
+set arrayVariableWithFunctionCall: [i32, MAX_SIZE] = getArray();
 set binaryOperator: i32 = function() + b;
 
 struct Point {
-    x: i32,
-    y: i32
+    set x: i32;
+    set y: i32;
 }
 
 struct Rectangle {
-    topLeft: Point,
-    bottomRight: Point,
-    label: string
+    set topLeft: Point;
+    set bottomRight: Point;
+    set label: string;
 }
 
 func main(var: string, var2: i8) -> void {
     set localVariable: i32 = 10;
     set localVariableWithFunctionCall: i32 = add(10, 20);
-    set localArrayVariable: [i32; MAX_SIZE] = {1, 2, 3, 4};
+    set localArrayVariable: [i32, MAX_SIZE] = {1, 2, 3, 4};
 
     print("Hello, World!");
     // print(localVariable)
 
-    return
+    return void;
 }
 
 func add(x: i32, y: i32) -> i32 {
-    return x + y
+    return x + y;
 }
 
-func getArray() -> [i32; MAX_SIZE] {
-    return {1, 2, 3, 4, 5, ...}
+func getArray() -> [i32, MAX_SIZE] {
+    return {1, 2, 3, 4, 5};
 }
 
 func printRectangle(rect: Rectangle) -> void {
-    print("Rectangle: ", rect.label);
-    print("Top Left - X: ", rect.topLeft.x, ", Y: ", rect.topLeft.y);
-    print("Bottom Right - X: ", rect.bottomRight.x, ", Y: ", rect.bottomRight.y);
+    print("Rectangle: ");
+    print(rect.label);
 }
+

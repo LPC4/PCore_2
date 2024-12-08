@@ -171,7 +171,7 @@ public class Lexer {
 
     private void handleIdentifierOrKeyword() {
         int start = position;
-        while (position < source.length() && Character.isLetterOrDigit(source.charAt(position))) {
+        while (position < source.length() && (Character.isLetterOrDigit(source.charAt(position)) || source.charAt(position) == '_')) {
             advance();
         }
         String value = source.substring(start, position);

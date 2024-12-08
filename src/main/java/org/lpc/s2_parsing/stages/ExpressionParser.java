@@ -195,7 +195,7 @@ public class ExpressionParser {
             return parsePrint();
         }
 
-        throw new RuntimeException("Unexpected token: " + peek().getValue());
+        throw new SyntaxError("Unexpected token: " + peek().getValue(), tokens, current);
     }
 
     private PrintNode parsePrint() {
@@ -301,6 +301,20 @@ public class ExpressionParser {
 
     private Token previous() {
         return tokens.get(current - 1);
+    }
+
+    static class SyntaxError extends RuntimeException {
+        public SyntaxError(String message, List<Token> tokens, int current) {
+            StringBuilder errorMessage = new StringBuilder("Syntax error: ");
+            errorMessage.append(message);
+            errorMessage.append("Context: ");
+            for (int i = Math.max(0, current - 5); i < Math.min(current + 5, tokens.size()); i++) {
+                errorMessage.append(tokens.get(i).getValue());
+                errorMessage.append(" ");
+            }
+
+            throw new RuntimeException(errorMessage.toString());
+        }
     }
 }
 

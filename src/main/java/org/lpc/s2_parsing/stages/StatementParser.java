@@ -55,8 +55,7 @@ public class StatementParser {
         if (check(TokenType.RETURN)) {
             return parseReturnStatement();
         }
-        System.out.println("Expression statement");
-        System.out.println(peek().getValue());
+        // Default case: parse expression statement
         return parseExpressionStatement();
     }
 
@@ -176,7 +175,6 @@ public class StatementParser {
         }
     }
 
-
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
             if (check(type)) {
@@ -194,7 +192,7 @@ public class StatementParser {
 
     private Token consume(TokenType type, String message) {
         if (check(type)) return advance();
-        throw new RuntimeException(message);
+        throw new StatementParserException(message, tokens, current);
     }
 
     private boolean check(TokenType type) {
@@ -217,5 +215,18 @@ public class StatementParser {
 
     private Token previous() {
         return tokens.get(current - 1);
+    }
+
+    static class StatementParserException extends RuntimeException {
+        public StatementParserException(String message, List<Token> tokens, int current) {
+            StringBuilder errorMessage = new StringBuilder("Statement parsing error: ");
+            errorMessage.append(message);
+            errorMessage.append("Context: ");
+            for (int i = Math.max(0, current - 5); i < Math.min(current + 5, tokens.size()); i++) {
+                errorMessage.append(tokens.get(i).getValue());
+                errorMessage.append(" ");
+            }
+            throw new RuntimeException(errorMessage.toString());
+        }
     }
 }

@@ -10,8 +10,8 @@ set globalString: string = "Hello, PCore!";
 set globalArray: [i32, MAX_SIZE] = {1, 2, 3, 4, 5};
 
 struct Point {
-    x: i32,
-    y: i32
+    x: i32;
+    y: i32;
 }
 
 func main() -> void {
@@ -26,7 +26,6 @@ func main() -> void {
 
     // Heap allocation
     set heapInt: ^i32 = alloc(i32);
-    *heapInt = 200;
     set heapPoint: ^Point = alloc(Point);
     heapPoint->x = 30;
     heapPoint->y = 40;

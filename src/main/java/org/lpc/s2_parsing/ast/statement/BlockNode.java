@@ -21,7 +21,7 @@ public class BlockNode extends StatementNode {
         for (StatementNode statement : statements) {
             sb.append(statement.toString(depth + 1));
         }
-        sb.append("\n").append(indent(depth)).append("]\n");
+        sb.append(indent(depth)).append("}\n");
         return sb.toString();
     }
 }

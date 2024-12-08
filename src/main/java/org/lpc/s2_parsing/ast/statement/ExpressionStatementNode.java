@@ -11,6 +11,6 @@ public class ExpressionStatementNode extends StatementNode {
 
     @Override
     public String toString(int depth) {
-        return "\n" + indent(depth) + "ExpressionStatement(" + expression.toString(depth + 1) + "\n" + indent(depth) + ")";
+        return "\n" + indent(depth) + "ExpressionStatement(" + expression.toString(depth + 1) + "\n" + indent(depth) + ")\n";
     }
 }

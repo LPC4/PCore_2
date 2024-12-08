@@ -44,15 +44,41 @@ public class StatementParser {
             return parseVariableDeclaration();
         }
         if (check(TokenType.IF)) {
-            //return parseIfStatement();
+            return parseIfStatement();
         }
         if (check(TokenType.WHILE)) {
-            //return parseWhileStatement();
+            return parseWhileStatement();
         }
         if (check(TokenType.RETURN)) {
             return parseReturnStatement();
         }
+        System.out.println("Expression statement");
+        System.out.println(peek().getValue());
         return parseExpressionStatement();
+    }
+
+    private StatementNode parseWhileStatement() {
+        consume(TokenType.WHILE, "Expect 'while' keyword.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        ExpressionNode condition = expressionParser.parseExpression(current);
+        current = expressionParser.getCurrent();
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after while condition.");
+        StatementNode body = parseStatement();
+        return new WhileStatementNode(condition, body);
+    }
+
+    private StatementNode parseIfStatement() {
+        consume(TokenType.IF, "Expect 'if' keyword.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+        ExpressionNode condition = expressionParser.parseExpression(current);
+        current = expressionParser.getCurrent();
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+        StatementNode thenBranch = parseStatement();
+        StatementNode elseBranch = null;
+        if (match(TokenType.ELSE)) {
+            elseBranch = parseStatement();
+        }
+        return new IfStatementNode(condition, thenBranch, elseBranch);
     }
 
     private ReturnStatementNode parseReturnStatement() {

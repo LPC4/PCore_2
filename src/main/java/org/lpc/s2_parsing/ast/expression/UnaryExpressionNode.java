@@ -40,4 +40,9 @@ public class UnaryExpressionNode extends ExpressionNode {
             this.value = value;
         }
     }
+
+    @Override
+    public String toString(int depth) {
+        return "\n" + indent(depth) + "UnaryExpression(" + operator.getValue() + ")" + operand.toString(depth + 1);
+    }
 }

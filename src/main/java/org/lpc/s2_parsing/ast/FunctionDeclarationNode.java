@@ -23,7 +23,7 @@ public class FunctionDeclarationNode extends ASTNode {
     public String toString(int depth) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append(indent(depth)).append("Function(").append(name).append(")\n");
+        sb.append(indent(depth)).append("Function(").append(name).append(")").append("{ \n");
         sb.append(indent(depth + 1)).append("returnType: ").append(returnType).append("\n");
         sb.append(indent(depth + 1)).append("parameters: [");
         for (ParameterNode parameter : parameters) {
@@ -32,6 +32,8 @@ public class FunctionDeclarationNode extends ASTNode {
         sb.append("\n");
         sb.append(indent(depth + 1)).append("]");
         sb.append(body.toString(depth + 1));
+        sb.append(indent(depth)).append("}\n");
+
         return sb.toString();
     }
 }

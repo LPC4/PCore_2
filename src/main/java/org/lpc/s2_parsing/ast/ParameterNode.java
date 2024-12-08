@@ -16,8 +16,8 @@ public class ParameterNode extends ASTNode {
     public String toString(int depth) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append(indent(depth)).append(name).append(")");
-        sb.append(indent(1)).append("type: ").append(type);
+        sb.append(indent(depth)).append(name);
+        sb.append(": ").append(type);
         return sb.toString();
     }
 }

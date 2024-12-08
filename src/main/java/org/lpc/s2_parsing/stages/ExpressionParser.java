@@ -126,6 +126,12 @@ public class ExpressionParser {
                 ExpressionNode callee = new IdentifierNode(identifierToken.getValue());
                 return parseFunctionCall(callee);
             }
+            if (check(TokenType.EQUAL)) {
+                System.out.println("Assignment detected");
+                advance();
+                ExpressionNode value = parseExpression(current);
+                return new VariableExpressionNode(identifierToken.getValue(), value);
+            }
             System.out.println("Identifier detected");
             return new IdentifierNode(identifierToken.getValue());
         }

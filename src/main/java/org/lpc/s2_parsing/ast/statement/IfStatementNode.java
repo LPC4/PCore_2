@@ -14,5 +14,20 @@ public class IfStatementNode extends StatementNode {
         this.thenBranch = thenBranch;
         this.elseBranch = elseBranch;
     }
+
+    @Override
+    public String toString(int depth) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(indent(depth)).append("If(").append(condition.toString(depth + 1));
+        sb.append("\n");
+        sb.append(indent(depth + 1)).append("Then: ");
+        sb.append(indent(depth + 1)).append(thenBranch.toString(depth + 1));
+        if (elseBranch != null) {
+            sb.append(indent(depth + 1)).append("Else: ");
+            sb.append(indent(depth + 1)).append(elseBranch.toString(depth + 1));
+        }
+        return sb.toString();
+    }
 }
 

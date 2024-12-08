@@ -10,5 +10,10 @@ public class ReturnStatementNode extends StatementNode {
     public ReturnStatementNode(ExpressionNode returnValue) {
         this.returnValue = returnValue;
     }
+
+    @Override
+    public String toString(int depth) {
+        return "\n" + indent(depth) + "Return(" + returnValue.toString(depth + 1) + "\n" + indent(depth) + ")\n";
+    }
 }
 

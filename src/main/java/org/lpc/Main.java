@@ -16,6 +16,18 @@ public class Main {
                     ++x;
                     add(a, b);
                     return c;
+                    
+                    if (a == b) {
+                        return a;
+                    } else {
+                        return b;
+                    }
+                    
+                    a = 0;
+                    
+                    while (a < b) {
+                        add(a, b);
+                    }
                 }
                 """
         );

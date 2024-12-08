@@ -9,5 +9,10 @@ public class IdentifierNode extends ExpressionNode {
     public IdentifierNode(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString(int depth) {
+        return "\n" + indent(depth) + "Identifier(" + name + ")";
+    }
 }
 

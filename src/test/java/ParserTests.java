@@ -83,6 +83,38 @@ public class ParserTests {
         // no errors, check the AST
     }
 
+    @Test
+    public void testFunctionDeclarations() {
+        Lexer lexer = new Lexer("""
+                program main;
+                
+                func add(param1: int, b: int) -> int {
+                    set c: int = a + b;
+                    ++x;
+                    add(a, b);
+                    return c;
+                    
+                    if (a == b) {
+                        return a;
+                    } else {
+                        return b;
+                    }
+                    
+                    a = 0;
+                    
+                    while (a < b) {
+                        add(a, b);
+                    }
+                }
+                """
+        );
+
+        List<Token> tokens = lexer.tokenize();
+        //printTokens(tokens);
+
+        Parser parser = new Parser(tokens);
+    }
+
     public static void printTokens(List<Token> tokens) {
         int maxTokenLength = tokens.stream().mapToInt(token -> token.getValue().length()).max().orElse(0);
         for (Token token : tokens) {

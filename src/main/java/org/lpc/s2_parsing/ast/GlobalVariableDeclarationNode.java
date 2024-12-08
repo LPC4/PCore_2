@@ -26,6 +26,11 @@ public class GlobalVariableDeclarationNode extends ASTNode {
         sb.append("\n");
         sb.append("  ".repeat(Math.max(0, depth)));
         sb.append("Global");
+
+        if (isConst) {
+            sb.append(" const");
+        }
+
         sb.append(" ");
         sb.append(name);
         sb.append(" ");

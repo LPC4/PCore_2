@@ -4,7 +4,7 @@ public enum TokenType {
     // Keywords
     PROGRAM, CONST, SET, FUNC, RETURN, IF, ELSE, WHILE, DO, FOR, ARROW, NEW,
 
-    ALLOC, FREE,
+    ALLOC, FREE, PRINT,
 
     // Identifiers
     IDENTIFIER,

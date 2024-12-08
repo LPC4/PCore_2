@@ -192,6 +192,7 @@ public class Lexer {
             case "struct" -> TokenType.STRUCT;
             case "null" -> TokenType.NULL;
             case "new" -> TokenType.NEW;
+            case "print" -> TokenType.PRINT;
 
             default -> TokenType.IDENTIFIER;
         };

@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.lpc.s1_tokenization.Token;
 import org.lpc.s1_tokenization.TokenType;
 import org.lpc.s2_parsing.ast.expression.*;
+import org.lpc.s2_parsing.ast.expression.funcs.PrintNode;
 import org.lpc.s2_parsing.ast.expression.math.BinaryExpressionNode;
 import org.lpc.s2_parsing.ast.expression.math.LogicalExpressionNode;
 import org.lpc.s2_parsing.ast.expression.math.UnaryExpressionNode;
@@ -189,7 +190,19 @@ public class ExpressionParser {
             return parseMemoryAllocation();
         }
 
+        if (check(TokenType.PRINT)) {
+            advance();
+            return parsePrint();
+        }
+
         throw new RuntimeException("Unexpected token: " + peek().getValue());
+    }
+
+    private PrintNode parsePrint() {
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'print'");
+        ExpressionNode value = parseExpression(current);
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after value");
+        return new PrintNode(value);
     }
 
     private StructCreationNode parseStructCreation() {

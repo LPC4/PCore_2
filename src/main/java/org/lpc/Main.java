@@ -31,6 +31,11 @@ public class Main {
                 set p: Person = new Person("John", 25);
                 set p2: Person = new Person(p.name, p.age);
                 set p3: Person = new Person(p2.name, p2.age);
+                
+                func add(a: int, b: int) -> int {
+                    print("Adding numbers...");
+                    return a + b;
+                }
                 """
         );
 

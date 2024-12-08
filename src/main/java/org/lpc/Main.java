@@ -11,28 +11,21 @@ public class Main {
         Lexer lexer = new Lexer("""
                 program main;
                 
-                func add(a: int, b: int) -> int {
+                set arry: [int, 5] = {1, 2, 3, 4, 5};
+                set arry2: [[int, 5], 5] = {{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}};
                 
-                    set c: int = a + b;
-                    ++x;
-                    add(a, b);
-                    return c;
+                func main() -> void {
+                    set result: int = add(5, 3);
+                    set pNumber: ^int = &number;
+                    set memory: ^int = malloc(10 * sizeof(int));
+                    set number: int = ^pNumber;
+                    free(memory);
+                   
+                }
                 
-                    set b: [int, 10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-                    a = null;
-                
-                    if (a == b) {
-                        return a;
-                    } else {
-                        return b;
-                    }
-                
-                    a = 0;
-               
-                    while (a < b) {
-                        add(a, b);
-                    }
+                struct Person {
+                    set name: string;
+                    set age: int;
                 }
                 """
         );

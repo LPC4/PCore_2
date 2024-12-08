@@ -141,11 +141,26 @@ public class StatementParser {
                 variableDeclaration.setConst();
             }
         }
+        else if (check(TokenType.CARET)) { // Pointer declaration
+            consume(TokenType.CARET, "Expect '^' after variable name.");
+            consume(TokenType.IDENTIFIER, "Expect type name.");
+            String baseType = previous().getValue();
+            ExpressionNode initializer = null;
+            if (match(TokenType.EQUAL)) {
+                initializer = expressionParser.parseExpression(current);
+                current = expressionParser.getCurrent();
+            }
+            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+            variableDeclaration = new VariableDeclarationStatementNode(name, "^" + baseType, initializer);
+            if (isConst) {
+                variableDeclaration.setConst();
+            }
+        }
+
         else {
             throw new RuntimeException("Unexpected token: " + peek().getValue());
         }
-
-
 
         return variableDeclaration;
     }

@@ -28,6 +28,8 @@ public class VariableDeclarationStatementNode extends StatementNode {
         sb.append(indent(depth)).append("VariableDeclaration(").append(name).append(")").append(isConst ? " const" : "").append(" type: ").append(type);
         if (initializer != null) {
             sb.append(indent(depth + 1)).append(initializer.toString(depth + 1));
+        } else {
+            sb.append("\n");
         }
         return sb.toString();
     }

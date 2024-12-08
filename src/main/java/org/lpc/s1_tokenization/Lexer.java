@@ -102,6 +102,9 @@ public class Lexer {
             case '.':
                 tokens.add(new Token(TokenType.DOT, ".", line, column));
                 break;
+            case '^':
+                tokens.add(new Token(TokenType.CARET, "^", line, column));
+                break;
             case '+':
                 addTokenWithConditional(TokenType.PLUS, TokenType.PLUS_PLUS, '+');
                 break;
@@ -115,7 +118,7 @@ public class Lexer {
                 handleCommentOrSlash();
                 break;
             case '&':
-                addTokenWithConditional(null, TokenType.AND, '&');
+                addTokenWithConditional(TokenType.AMPERSAND, TokenType.AND, '&');
                 break;
             case '|':
                 addTokenWithConditional(null, TokenType.OR, '|');

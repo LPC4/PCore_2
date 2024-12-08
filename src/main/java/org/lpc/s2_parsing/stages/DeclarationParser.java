@@ -125,6 +125,13 @@ public class DeclarationParser {
             return "[" + elementType.getValue() + ", " + size + "]";
         }
 
+        // Parse pointer type ^basetype
+        if (check(TokenType.CARET)) {
+            advance();
+            String baseType = parseType();
+            return baseType + "^";
+        }
+
         // Parse primitive or complex type (non-array)
         return consume(TokenType.IDENTIFIER, "Expected type name").getValue();
     }
@@ -137,7 +144,7 @@ public class DeclarationParser {
             ExpressionParser expressionParser = new ExpressionParser(tokens, current);
             ExpressionNode expression = expressionParser.parseExpression(current);
             this.current = expressionParser.getCurrent(); // Update current position
-            return expression.toString(0); // Convert the parsed expression to a string representation
+            return expression.toString(); // Convert the parsed expression to a string representation
         } else {
             throw new SyntaxError("Expected array size");
         }
@@ -187,8 +194,17 @@ public class DeclarationParser {
         return new ParameterNode(name.getValue(), type);
     }
 
-    private ASTNode parseStructDeclaration() {
-        return null;
+    private StructDeclarationNode parseStructDeclaration() {
+        consume(TokenType.STRUCT, "Expected 'struct' keyword at the beginning of the struct declaration");
+
+        // Parse the struct name
+        Token name = consume(TokenType.IDENTIFIER, "Expected struct name after 'struct' keyword");
+
+        // Parse the struct body
+        BlockStatementNode body = statementParser.parseBlock(current);
+        current = statementParser.getCurrent();
+
+        return new StructDeclarationNode(name.getValue(), body);
     }
 
 

@@ -1,4 +1,6 @@
-package org.lpc.s2_parsing.ast.expression;
+package org.lpc.s2_parsing.ast.expression.value;
+
+import org.lpc.s2_parsing.ast.expression.ExpressionNode;
 
 import java.util.List;
 

@@ -1,6 +1,7 @@
-package org.lpc.s2_parsing.ast.expression;
+package org.lpc.s2_parsing.ast.expression.value;
 
 import lombok.Getter;
+import org.lpc.s2_parsing.ast.expression.ExpressionNode;
 
 @Getter
 public class IdentifierNode extends ExpressionNode {

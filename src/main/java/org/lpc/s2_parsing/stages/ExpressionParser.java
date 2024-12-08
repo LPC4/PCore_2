@@ -4,6 +4,14 @@ import lombok.Getter;
 import org.lpc.s1_tokenization.Token;
 import org.lpc.s1_tokenization.TokenType;
 import org.lpc.s2_parsing.ast.expression.*;
+import org.lpc.s2_parsing.ast.expression.math.BinaryExpressionNode;
+import org.lpc.s2_parsing.ast.expression.math.LogicalExpressionNode;
+import org.lpc.s2_parsing.ast.expression.math.UnaryExpressionNode;
+import org.lpc.s2_parsing.ast.expression.memory.MemoryAllocationNode;
+import org.lpc.s2_parsing.ast.expression.memory.MemoryFreeNode;
+import org.lpc.s2_parsing.ast.expression.memory.PointerDereferenceNode;
+import org.lpc.s2_parsing.ast.expression.value.*;
+import org.lpc.s2_parsing.ast.expression.GroupingNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,32 +125,77 @@ public class ExpressionParser {
             return parseArray();
         }
 
+        // Identifier
+        if (check(TokenType.IDENTIFIER)) {
+            Token identifierToken = advance();
+
+            // Function call
+            if (check(TokenType.LEFT_PAREN)) {
+                //System.out.println("Function call detected");
+                ExpressionNode callee = new IdentifierNode(identifierToken.getValue());
+                return parseFunctionCall(callee);
+            }
+            // Assignment
+            if (check(TokenType.EQUAL)) {
+                //System.out.println("Assignment detected");
+                advance();
+                ExpressionNode value = parseExpression(current);
+                return new VariableExpressionNode(identifierToken.getValue(), value);
+            }
+
+            // Identifier
+            return new IdentifierNode(identifierToken.getValue());
+        }
+
         // Grouping
         if (match(TokenType.LEFT_PAREN)) {
             ExpressionNode expr = parseExpression(current);
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression");
             return new GroupingNode(expr);
         }
-        // Identifier
-        if (check(TokenType.IDENTIFIER)) {
-            Token identifierToken = advance(); // Advance the current position to consume the identifier
-            if (check(TokenType.LEFT_PAREN)) {
-                System.out.println("Function call detected");
-                ExpressionNode callee = new IdentifierNode(identifierToken.getValue());
-                return parseFunctionCall(callee);
-            }
-            if (check(TokenType.EQUAL)) {
-                System.out.println("Assignment detected");
-                advance();
-                ExpressionNode value = parseExpression(current);
-                return new VariableExpressionNode(identifierToken.getValue(), value);
-            }
-            System.out.println("Identifier detected");
-            return new IdentifierNode(identifierToken.getValue());
+
+        // Pointer dereference
+        if (check(TokenType.CARET)) {
+            //System.out.println("Pointer dereference detected");
+            advance();
+            return new PointerDereferenceNode(parsePrimary());
         }
-        // Error
+        // Pointer address-of
+        if (check(TokenType.AMPERSAND)) {
+            //System.out.println("Pointer address-of detected");
+            advance();
+            return new AddressOfNode(parsePrimary());
+        }
+
+        // Memory free
+        if (check(TokenType.FREE)) {
+            //System.out.println("Free detected");
+            advance();
+            return parseMemoryFree();
+        }
+        // Memory allocation
+        if (check(TokenType.ALLOC)) {
+            //System.out.println("Malloc detected");
+            advance();
+            return parseMemoryAllocation();
+        }
+
 
         throw new RuntimeException("Unexpected token: " + peek().getValue());
+    }
+
+    private ExpressionNode parseMemoryAllocation() {
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'malloc'");
+        ExpressionNode size = parseExpression(current);
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after size");
+        return new MemoryAllocationNode(size);
+    }
+
+    private ExpressionNode parseMemoryFree() {
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'free'");
+        ExpressionNode pointer = parseExpression(current);
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after pointer");
+        return new MemoryFreeNode(pointer);
     }
 
     private ExpressionNode parseArray() {

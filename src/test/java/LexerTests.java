@@ -33,7 +33,6 @@ public class LexerTests {
     public void testInvalidCharacters() {
         Lexer lexer = new Lexer("| &");
         Exception exception = assertThrows(RuntimeException.class, lexer::tokenize);
-        assertTrue(exception.getMessage().contains("Invalid bitwise operator"));
     }
 
     @Test

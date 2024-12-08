@@ -4,13 +4,13 @@ import lombok.Getter;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
 
 @Getter
-public class VariableDeclarationNode extends StatementNode {
+public class VariableDeclarationStatementNode extends StatementNode {
     private final String name;
     private final String type;
     private final ExpressionNode initializer;
     private boolean isConst;
 
-    public VariableDeclarationNode(String name, String type, ExpressionNode initializer) {
+    public VariableDeclarationStatementNode(String name, String type, ExpressionNode initializer) {
         this.name = name;
         this.type = type;
         this.initializer = initializer;

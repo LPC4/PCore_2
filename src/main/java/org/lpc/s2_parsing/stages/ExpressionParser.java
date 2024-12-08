@@ -107,18 +107,23 @@ public class ExpressionParser {
     }
 
     private ExpressionNode parsePrimary() {
-        System.out.println("Current token: " + peek().getValue() + " Type: " + peek().getType());
-
-        if (match(TokenType.INTEGER, TokenType.FLOAT, TokenType.STRING, TokenType.CHAR)) {
-            System.out.println("Literal detected");
+        // Literal
+        if (match(TokenType.INTEGER, TokenType.FLOAT, TokenType.STRING, TokenType.CHAR, TokenType.BOOLEAN, TokenType.NULL)) {
             return new LiteralNode(previous().getValue());
         }
+
+        // Array
+        if (check(TokenType.LEFT_BRACE)) {
+            return parseArray();
+        }
+
+        // Grouping
         if (match(TokenType.LEFT_PAREN)) {
-            System.out.println("Grouping detected");
             ExpressionNode expr = parseExpression(current);
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression");
             return new GroupingNode(expr);
         }
+        // Identifier
         if (check(TokenType.IDENTIFIER)) {
             Token identifierToken = advance(); // Advance the current position to consume the identifier
             if (check(TokenType.LEFT_PAREN)) {
@@ -135,8 +140,21 @@ public class ExpressionParser {
             System.out.println("Identifier detected");
             return new IdentifierNode(identifierToken.getValue());
         }
+        // Error
 
         throw new RuntimeException("Unexpected token: " + peek().getValue());
+    }
+
+    private ExpressionNode parseArray() {
+        List<ExpressionNode> elements = new ArrayList<>();
+        consume(TokenType.LEFT_BRACE, "Expect '{' before array elements");
+        if (!check(TokenType.RIGHT_BRACE)) {
+            do {
+                elements.add(parseExpression(current));
+            } while (match(TokenType.COMMA));
+        }
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after array elements");
+        return new ArrayNode(elements);
     }
 
     private ExpressionNode parseFunctionCall(ExpressionNode callee) {

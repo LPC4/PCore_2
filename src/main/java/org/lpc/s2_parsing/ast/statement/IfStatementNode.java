@@ -27,6 +27,7 @@ public class IfStatementNode extends StatementNode {
             sb.append(indent(depth + 1)).append("Else: ");
             sb.append(indent(depth + 1)).append(elseBranch.toString(depth + 1));
         }
+        sb.append(indent(depth)).append(")\n");
         return sb.toString();
     }
 }

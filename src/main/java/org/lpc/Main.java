@@ -12,19 +12,24 @@ public class Main {
                 program main;
                 
                 func add(a: int, b: int) -> int {
+                
                     set c: int = a + b;
                     ++x;
                     add(a, b);
                     return c;
-                    
+                
+                    set b: [int, 10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+                    a = null;
+                
                     if (a == b) {
                         return a;
                     } else {
                         return b;
                     }
-                    
+                
                     a = 0;
-                    
+               
                     while (a < b) {
                         add(a, b);
                     }

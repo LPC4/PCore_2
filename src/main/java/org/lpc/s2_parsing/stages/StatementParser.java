@@ -13,7 +13,7 @@ public class StatementParser {
     private final List<Token> tokens;
     @Getter
     private int current;
-    private ExpressionParser expressionParser;
+    private final ExpressionParser expressionParser;
 
     public StatementParser(List<Token> tokens, int current, ExpressionParser expressionParser) {
         this.tokens = tokens;
@@ -21,19 +21,19 @@ public class StatementParser {
         this.expressionParser = expressionParser;
     }
 
-    public BlockNode parseBlock(int current) {
+    public BlockStatementNode parseBlock(int current) {
         this.current = current;
         return parseBlock();
     }
 
-    private BlockNode parseBlock() {
+    private BlockStatementNode parseBlock() {
         List<StatementNode> statements = new ArrayList<>();
         consume(TokenType.LEFT_BRACE, "Expect '{' before block.");
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
             statements.add(parseStatement());
         }
         consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
-        return new BlockNode(statements);
+        return new BlockStatementNode(statements);
     }
 
     private StatementNode parseStatement() {
@@ -96,8 +96,8 @@ public class StatementParser {
         return new ExpressionStatementNode(expression);
     }
 
-    private VariableDeclarationNode parseVariableDeclaration() {
-        VariableDeclarationNode variableDeclaration;
+    private VariableDeclarationStatementNode parseVariableDeclaration() {
+        VariableDeclarationStatementNode variableDeclaration;
 
         boolean isConst = check(TokenType.CONST);
         advance();
@@ -105,19 +105,47 @@ public class StatementParser {
         consume(TokenType.IDENTIFIER, "Expect variable name.");
         String name = previous().getValue();
         consume(TokenType.COLON, "Expect ':' after variable name.");
-        consume(TokenType.IDENTIFIER, "Expect type name.");
-        String type = previous().getValue();
-        ExpressionNode initializer = null;
-        if (match(TokenType.EQUAL)) {
-            initializer = expressionParser.parseExpression(current);
-            current = expressionParser.getCurrent();
-        }
-        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
 
-        variableDeclaration = new VariableDeclarationNode(name, type, initializer);
-        if (isConst) {
-            variableDeclaration.setConst();
+        if (check(TokenType.IDENTIFIER)) { // Normal variable declaration
+            consume(TokenType.IDENTIFIER, "Expect type name.");
+            String type = previous().getValue();
+            ExpressionNode initializer = null;
+            if (match(TokenType.EQUAL)) {
+                initializer = expressionParser.parseExpression(current);
+                current = expressionParser.getCurrent();
+            }
+            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+            variableDeclaration = new VariableDeclarationStatementNode(name, type, initializer);
+            if (isConst) {
+                variableDeclaration.setConst();
+            }
         }
+        else if (check(TokenType.LEFT_BRACKET)) { // Array declaration
+            consume(TokenType.LEFT_BRACKET, "Expect '[' after variable name.");
+            consume(TokenType.IDENTIFIER, "Expect type name.");
+            String elementType = previous().getValue();
+            consume(TokenType.COMMA, "Expect ',' after array element type.");
+            consume(TokenType.INTEGER, "Expect array size.");
+            String size = previous().getValue();
+            consume(TokenType.RIGHT_BRACKET, "Expect ']' after array size.");
+            ExpressionNode initializer = null;
+            if (match(TokenType.EQUAL)) {
+                initializer = expressionParser.parseExpression(current);
+                current = expressionParser.getCurrent();
+            }
+            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+            variableDeclaration = new VariableDeclarationStatementNode(name, "[" + elementType + ", " + size + "]", initializer);
+            if (isConst) {
+                variableDeclaration.setConst();
+            }
+        }
+        else {
+            throw new RuntimeException("Unexpected token: " + peek().getValue());
+        }
+
+
 
         return variableDeclaration;
     }

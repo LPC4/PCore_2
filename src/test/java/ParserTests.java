@@ -115,6 +115,30 @@ public class ParserTests {
         Parser parser = new Parser(tokens);
     }
 
+    @Test
+    public void testArrays(){
+        Lexer lexer = new Lexer("""
+                program main;
+                
+                set a: [int, 10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+                set b: [[int, 10], 10] = {a, a, a, a, a, a, a, a, a, a};
+                set c: [[int, 10], 10] = {a, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, a, a, a, a, a, a, a, a};
+                set d: [[[int, 10], 10], 10] = {b, b, b, b, b, b, b, b, b, b};
+                
+                set x: int = 10;
+                set e: [int, x] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+                set f: [[int, x], 10] = {e, e, e, e, e, e, e, e, e, e};
+                set g: [[int, x], 10] = {e, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, e, e, e, e, e, e, e, e};
+                
+                """
+        );
+
+        List<Token> tokens = lexer.tokenize();
+        //printTokens(tokens);
+
+        Parser parser = new Parser(tokens);
+    }
+
     public static void printTokens(List<Token> tokens) {
         int maxTokenLength = tokens.stream().mapToInt(token -> token.getValue().length()).max().orElse(0);
         for (Token token : tokens) {

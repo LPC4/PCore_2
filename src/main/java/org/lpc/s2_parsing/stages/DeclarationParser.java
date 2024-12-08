@@ -4,9 +4,7 @@ import org.lpc.s1_tokenization.Token;
 import org.lpc.s1_tokenization.TokenType;
 import org.lpc.s2_parsing.ast.*;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
-import org.lpc.s2_parsing.ast.statement.BlockNode;
-import org.lpc.s2_parsing.ast.statement.StatementNode;
-import org.lpc.s2_parsing.ast.statement.VariableDeclarationNode;
+import org.lpc.s2_parsing.ast.statement.BlockStatementNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,17 +103,45 @@ public class DeclarationParser {
         if (check(TokenType.LEFT_BRACKET)) {
             // Parse array type
             advance();
+
+            // Recursive case: handle nested arrays
+            if (check(TokenType.LEFT_BRACKET)) { // [[int, 10], 10]
+                String elementType = parseType();  // Recursive call to handle nested array
+                consume(TokenType.COMMA, "Expected ',' in array type");
+
+                String size = parseArraySize(); // Parse array size
+
+                consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
+                return "[" + elementType + ", " + size + "]";
+            }
+
+            // Base case: handle single array
             Token elementType = consume(TokenType.IDENTIFIER, "Expected array element type");
             consume(TokenType.COMMA, "Expected ',' in array type");
-            Token size = consume(TokenType.INTEGER, "Expected array size");
+
+            String size = parseArraySize(); // Parse array size
+
             consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
-            return "[" + elementType.getValue() + ", " + size.getValue() + "]";
-        } else {
-            // Parse primitive type
-            return consume(TokenType.IDENTIFIER, "Expected type name").getValue();
+            return "[" + elementType.getValue() + ", " + size + "]";
         }
+
+        // Parse primitive or complex type (non-array)
+        return consume(TokenType.IDENTIFIER, "Expected type name").getValue();
     }
 
+    private String parseArraySize() {
+        if (check(TokenType.LEFT_BRACKET)) {
+            return parseType(); // Handle nested array size
+        } else if (check(TokenType.IDENTIFIER) || check(TokenType.INTEGER)) {
+            // Use ExpressionParser to parse more complex expressions (e.g., function calls, identifiers, literals)
+            ExpressionParser expressionParser = new ExpressionParser(tokens, current);
+            ExpressionNode expression = expressionParser.parseExpression(current);
+            this.current = expressionParser.getCurrent(); // Update current position
+            return expression.toString(0); // Convert the parsed expression to a string representation
+        } else {
+            throw new SyntaxError("Expected array size");
+        }
+    }
 
     private FunctionDeclarationNode parseFunctionDeclaration() {
         consume(TokenType.FUNC, "Expected 'func' keyword at the beginning of the function declaration");
@@ -133,7 +159,7 @@ public class DeclarationParser {
         String returnType = parseType();
 
         // Parse the function body
-        BlockNode body = statementParser.parseBlock(current);
+        BlockStatementNode body = statementParser.parseBlock(current);
         current = statementParser.getCurrent();
 
         return new FunctionDeclarationNode(name.getValue(), returnType, parameters, body);

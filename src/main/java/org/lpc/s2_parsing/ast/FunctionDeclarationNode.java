@@ -1,7 +1,7 @@
 package org.lpc.s2_parsing.ast;
 
 import lombok.Getter;
-import org.lpc.s2_parsing.ast.statement.BlockNode;
+import org.lpc.s2_parsing.ast.statement.BlockStatementNode;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ public class FunctionDeclarationNode extends ASTNode {
     private final String name;
     private final String returnType;
     private final List<ParameterNode> parameters;
-    private final BlockNode body;
+    private final BlockStatementNode body;
 
-    public FunctionDeclarationNode(String name, String returnType, List<ParameterNode> parameters, BlockNode body) {
+    public FunctionDeclarationNode(String name, String returnType, List<ParameterNode> parameters, BlockStatementNode body) {
         this.name = name;
         this.returnType = returnType;
         this.parameters = parameters;

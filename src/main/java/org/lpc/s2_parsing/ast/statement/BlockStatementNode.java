@@ -2,10 +2,10 @@ package org.lpc.s2_parsing.ast.statement;
 
 import java.util.List;
 
-public class BlockNode extends StatementNode {
+public class BlockStatementNode extends StatementNode {
     List<StatementNode> statements;
 
-    public BlockNode(List<StatementNode> statements) {
+    public BlockStatementNode(List<StatementNode> statements) {
         this.statements = statements;
 
         for (StatementNode statement : statements) {

@@ -21,9 +21,9 @@ public class FunctionCallExpressionNode extends ExpressionNode {
         sb.append(indent(depth)).append("FunctionCallExpressionNode(").append(functionName).append(")\n");
         sb.append(indent(depth + 1)).append("arguments: [");
         for (ExpressionNode argument : arguments) {
-            sb.append(argument.toString(depth + 2)).append("\n");
+            sb.append(argument.toString(depth + 2));
         }
-        sb.append(indent(depth + 1)).append("]\n");
+        sb.append("\n").append(indent(depth + 1)).append("]\n");
         sb.append(indent(depth)).append(")");
         return sb.toString();
     }

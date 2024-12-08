@@ -1,0 +1,32 @@
+program MemoryManagementExample;
+
+struct Point {
+    x: i32,
+    y: i32
+}
+
+func main() -> void {
+    // Stack allocation
+    set localPoint: Point = {x: 10, y: 20};
+
+    // Heap allocation
+    set heapPoint: ^Point = alloc(Point);
+    heapPoint->x = 30;
+    heapPoint->y = 40;
+
+    // Print values
+    print("Local Point:");
+    printPoint(localPoint);
+
+    print("Heap Point:");
+    printPoint(*heapPoint);
+
+    // Clean up heap memory
+    free(heapPoint);
+
+    return
+}
+
+func printPoint(p: Point) -> void {
+    print("Point - X: ", p.x, ", Y: ", p.y);
+}

@@ -1,0 +1,22 @@
+package org.lpc.s1_tokenization;
+
+public enum TokenType {
+    // Keywords
+    PROGRAM, CONST, SET, FUNC, RETURN, IF, ELSE, WHILE, DO, FOR, ALLOC, FREE, ARROW,
+
+    // Identifiers
+    IDENTIFIER,
+
+    // Literals
+    INTEGER, FLOAT, CHAR, STRING, BOOLEAN, STRUCT, NULL,
+
+    // Operators
+    PLUS, MINUS, STAR, SLASH, EQUAL, EQUAL_EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, AND, OR, NOT, PLUS_PLUS, MINUS_MINUS,
+
+    // Symbols
+    LEFT_BRACE, RIGHT_BRACE, LEFT_PAREN, RIGHT_PAREN, LEFT_BRACKET, RIGHT_BRACKET, COMMA, COLON, SEMICOLON, DOT,
+
+    // End of File
+    EOF;
+}
+

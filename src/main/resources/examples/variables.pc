@@ -1,0 +1,62 @@
+program VariableDeclarationsExample;
+
+const MAX_SIZE: u16 = 100;
+
+set globalInt: i32 = 50;
+set globalFloat: f32 = 3.14;
+set globalBoolean: bit = true;
+set globalChar: char = 'P';
+set globalString: string = "Hello, PCore!";
+set globalArray: [i32, MAX_SIZE] = {1, 2, 3, 4, 5};
+
+struct Point {
+    x: i32,
+    y: i32
+}
+
+func main() -> void {
+    // Stack allocation
+    set localInt: i32 = 100;
+    set localFloat: f32 = 6.28;
+    set localBoolean: bit = false;
+    set localChar: char = 'C';
+    set localString: string = "Hello, Local!";
+    set localArray: [i32, 5] = {10, 20, 30, 40, 50};
+    set localPoint: Point = {x: 10, y: 20};
+
+    // Heap allocation
+    set heapInt: ^i32 = alloc(i32);
+    *heapInt = 200;
+    set heapPoint: ^Point = alloc(Point);
+    heapPoint->x = 30;
+    heapPoint->y = 40;
+
+    // Print values
+    print("Global Integer: ", globalInt);
+    print("Global Float: ", globalFloat);
+    print("Global Boolean: ", globalBoolean);
+    print("Global Char: ", globalChar);
+    print("Global String: ", globalString);
+    print("Global Array Element: ", globalArray[0]);
+
+    print("Local Integer: ", localInt);
+    print("Local Float: ", localFloat);
+    print("Local Boolean: ", localBoolean);
+    print("Local Char: ", localChar);
+    print("Local String: ", localString);
+    print("Local Array Element: ", localArray[0]);
+    printPoint(localPoint);
+
+    print("Heap Integer: ", *heapInt);
+    printPoint(*heapPoint);
+
+    // Clean up heap memory
+    free(heapInt);
+    free(heapPoint);
+
+    return
+}
+
+func printPoint(p: Point) -> void {
+    print("Point - X: ", p.x, ", Y: ", p.y);
+}

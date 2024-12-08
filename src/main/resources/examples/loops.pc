@@ -1,0 +1,26 @@
+program LoopExample;
+
+func main() -> void {
+    // For loop with range
+    print("For loop with range:");
+    for (i in 0..5) {
+        print("i: ", i);
+    }
+
+    // For loop with array
+    set numbers: [i32; 5] = {10, 20, 30, 40, 50};
+    print("For loop with array:");
+    for (j in 0..5) {
+        print("numbers[", j, "]: ", numbers[j]);
+    }
+
+    // While loop
+    set count: i32 = 0;
+    print("While loop:");
+    while (count < 5){
+        print("count: ", count);
+        count = count + 1;
+    }
+
+    return
+}

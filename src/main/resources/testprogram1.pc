@@ -21,9 +21,6 @@ func main(var: string, var2: i8) -> void {
     call print("Hello, World!");
     //call print(localVariable);
 
-
-
-
     return;
 }
 

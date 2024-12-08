@@ -4,6 +4,9 @@ import lombok.Getter;
 import org.lpc.s1_tokenization.Token;
 import org.lpc.s1_tokenization.TokenType;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
+import org.lpc.s2_parsing.ast.expression.type.ArrayTypeNode;
+import org.lpc.s2_parsing.ast.expression.type.PointerTypeNode;
+import org.lpc.s2_parsing.ast.expression.type.TypeNode;
 import org.lpc.s2_parsing.ast.statement.*;
 
 import java.util.ArrayList;
@@ -106,64 +109,73 @@ public class StatementParser {
         String name = previous().getValue();
         consume(TokenType.COLON, "Expect ':' after variable name.");
 
-        if (check(TokenType.IDENTIFIER)) { // Normal variable declaration
-            consume(TokenType.IDENTIFIER, "Expect type name.");
-            String type = previous().getValue();
-            ExpressionNode initializer = null;
-            if (match(TokenType.EQUAL)) {
-                initializer = expressionParser.parseExpression(current);
-                current = expressionParser.getCurrent();
-            }
-            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
-
-            variableDeclaration = new VariableDeclarationStatementNode(name, type, initializer);
-            if (isConst) {
-                variableDeclaration.setConst();
-            }
+        TypeNode type = parseType(); // Use parseType to handle complex types (e.g., arrays, pointers)
+        ExpressionNode initializer = null;
+        if (match(TokenType.EQUAL)) {
+            initializer = expressionParser.parseExpression(current);
+            current = expressionParser.getCurrent();
         }
-        else if (check(TokenType.LEFT_BRACKET)) { // Array declaration
-            consume(TokenType.LEFT_BRACKET, "Expect '[' after variable name.");
-            consume(TokenType.IDENTIFIER, "Expect type name.");
-            String elementType = previous().getValue();
-            consume(TokenType.COMMA, "Expect ',' after array element type.");
-            consume(TokenType.INTEGER, "Expect array size.");
-            String size = previous().getValue();
-            consume(TokenType.RIGHT_BRACKET, "Expect ']' after array size.");
-            ExpressionNode initializer = null;
-            if (match(TokenType.EQUAL)) {
-                initializer = expressionParser.parseExpression(current);
-                current = expressionParser.getCurrent();
-            }
-            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
 
-            variableDeclaration = new VariableDeclarationStatementNode(name, "[" + elementType + ", " + size + "]", initializer);
-            if (isConst) {
-                variableDeclaration.setConst();
-            }
-        }
-        else if (check(TokenType.CARET)) { // Pointer declaration
-            consume(TokenType.CARET, "Expect '^' after variable name.");
-            consume(TokenType.IDENTIFIER, "Expect type name.");
-            String baseType = previous().getValue();
-            ExpressionNode initializer = null;
-            if (match(TokenType.EQUAL)) {
-                initializer = expressionParser.parseExpression(current);
-                current = expressionParser.getCurrent();
-            }
-            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
-
-            variableDeclaration = new VariableDeclarationStatementNode(name, "^" + baseType, initializer);
-            if (isConst) {
-                variableDeclaration.setConst();
-            }
-        }
-
-        else {
-            throw new RuntimeException("Unexpected token: " + peek().getValue());
+        variableDeclaration = new VariableDeclarationStatementNode(name, type, initializer);
+        if (isConst) {
+            variableDeclaration.setConst();
         }
 
         return variableDeclaration;
     }
+
+    private TypeNode parseType() {
+        if (check(TokenType.LEFT_BRACKET)) {
+            // Parse array type
+            advance();
+
+            // Recursive case: handle nested arrays
+            if (check(TokenType.LEFT_BRACKET)) { // [[int, 10], 10]
+                TypeNode elementType = parseType();  // Recursive call to handle nested array
+                consume(TokenType.COMMA, "Expected ',' in array type");
+
+                ExpressionNode size = parseArraySize(); // Parse array size
+
+                consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
+                return new ArrayTypeNode(elementType, size);
+            }
+
+            // Base case: handle single array
+            TypeNode elementType = new TypeNode(consume(TokenType.IDENTIFIER, "Expected array element type").getValue());
+            consume(TokenType.COMMA, "Expected ',' in array type");
+
+            ExpressionNode size = parseArraySize(); // Parse array size
+
+            consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
+            return new ArrayTypeNode(elementType, size);
+        }
+
+        // Parse pointer type ^basetype
+        if (check(TokenType.CARET)) {
+            advance();
+            TypeNode baseType = parseType();
+            return new PointerTypeNode(baseType);
+        }
+
+        // Parse primitive or complex type (non-array)
+        return new TypeNode(consume(TokenType.IDENTIFIER, "Expected type name").getValue());
+    }
+
+    private ExpressionNode parseArraySize() {
+        if (check(TokenType.LEFT_BRACKET)) {
+            return parseType(); // Handle nested array size
+        } else if (check(TokenType.IDENTIFIER) || check(TokenType.INTEGER)) {
+            // Use ExpressionParser to parse more complex expressions (e.g., function calls, identifiers, literals)
+            ExpressionParser expressionParser = new ExpressionParser(tokens, current);
+            ExpressionNode expression = expressionParser.parseExpression(current);
+            this.current = expressionParser.getCurrent(); // Update current position
+            return expression;
+        } else {
+            throw new SyntaxError("Expected array size");
+        }
+    }
+
 
     private boolean match(TokenType... types) {
         for (TokenType type : types) {

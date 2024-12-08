@@ -2,19 +2,19 @@ package org.lpc.s2_parsing.ast.statement;
 
 import lombok.Getter;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
+import org.lpc.s2_parsing.ast.expression.type.TypeNode;
 
 @Getter
 public class VariableDeclarationStatementNode extends StatementNode {
     private final String name;
-    private final String type;
+    private final TypeNode type;
     private final ExpressionNode initializer;
-    private boolean isConst;
+    private boolean isConst = false;
 
-    public VariableDeclarationStatementNode(String name, String type, ExpressionNode initializer) {
+    public VariableDeclarationStatementNode(String name, TypeNode type, ExpressionNode initializer) {
         this.name = name;
         this.type = type;
         this.initializer = initializer;
-        this.isConst = false;
     }
 
     public void setConst() {

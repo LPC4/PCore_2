@@ -2,15 +2,16 @@ package org.lpc.s2_parsing.ast;
 
 import lombok.Getter;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
+import org.lpc.s2_parsing.ast.expression.type.TypeNode;
 
 @Getter
 public class GlobalVariableDeclarationNode extends ASTNode {
     private final String name;
-    private final String type;
+    private final TypeNode type;
     private final ExpressionNode initializer;
     boolean isConst = false;
 
-    public GlobalVariableDeclarationNode(String name, String type, ExpressionNode initializer) {
+    public GlobalVariableDeclarationNode(String name, TypeNode type, ExpressionNode initializer) {
         this.name = name;
         this.type = type;
         this.initializer = initializer;
@@ -31,10 +32,11 @@ public class GlobalVariableDeclarationNode extends ASTNode {
             sb.append(" const");
         }
 
-        sb.append(" ");
+        sb.append("\n").append(indent(depth + 1));
         sb.append(name);
-        sb.append(" ");
-        sb.append(type);
+        sb.append(": ");
+        sb.append(type.toString(depth));
+
         if (initializer != null) {
             sb.append(initializer.toString(depth + 1));
         }

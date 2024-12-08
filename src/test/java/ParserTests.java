@@ -130,6 +130,53 @@ public class ParserTests {
                 set f: [[int, x], 10] = {e, e, e, e, e, e, e, e, e, e};
                 set g: [[int, x], 10] = {e, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, e, e, e, e, e, e, e, e};
                 
+                func add(param1: [int, 10], b: [int, 10]) -> [int, 10] {
+                    set c: [int, 10] = a + b;
+                    set d: [[int, 10], 10] = {c, c, c, c, c, c, c, c, c, c};
+                    return c;
+                }
+                
+                """
+        );
+
+        List<Token> tokens = lexer.tokenize();
+        //printTokens(tokens);
+
+        Parser parser = new Parser(tokens);
+    }
+
+    @Test
+    public void testStructs(){
+        Lexer lexer = new Lexer("""
+                program main;
+                
+                struct Person {
+                    set name: string;
+                    set age: int;
+                }
+                
+                set p: Person = {"John", 25};
+                set p2: Person = {p.name, p.age};
+                set p3: Person = {p2.name, p2.age};
+                """
+        );
+
+        List<Token> tokens = lexer.tokenize();
+        //printTokens(tokens);
+
+        Parser parser = new Parser(tokens);
+    }
+
+    @Test
+    public void testPointers(){
+        Lexer lexer = new Lexer("""
+                program main;
+                
+                set x: int = 5;
+                set p: ^int = &x;
+                set y: int = ^p;
+                set z: ^int = malloc(10 * sizeof(int));
+                free(z);
                 """
         );
 

@@ -4,6 +4,9 @@ import org.lpc.s1_tokenization.Token;
 import org.lpc.s1_tokenization.TokenType;
 import org.lpc.s2_parsing.ast.*;
 import org.lpc.s2_parsing.ast.expression.ExpressionNode;
+import org.lpc.s2_parsing.ast.expression.type.ArrayTypeNode;
+import org.lpc.s2_parsing.ast.expression.type.PointerTypeNode;
+import org.lpc.s2_parsing.ast.expression.type.TypeNode;
 import org.lpc.s2_parsing.ast.statement.BlockStatementNode;
 
 import java.util.ArrayList;
@@ -81,7 +84,7 @@ public class DeclarationParser {
 
         // Parse the variable type
         consume(TokenType.COLON, "Expected ':' after variable name");
-        String type = parseType();
+        TypeNode type = parseType();
 
         // Parse the initializer expression
         consume(TokenType.EQUAL, "Expected '=' after variable type");
@@ -99,56 +102,55 @@ public class DeclarationParser {
         return declaration;
     }
 
-    private String parseType() {
+    private TypeNode parseType() {
         if (check(TokenType.LEFT_BRACKET)) {
             // Parse array type
             advance();
 
             // Recursive case: handle nested arrays
             if (check(TokenType.LEFT_BRACKET)) { // [[int, 10], 10]
-                String elementType = parseType();  // Recursive call to handle nested array
+                TypeNode elementType = parseType();  // Recursive call to handle nested array
                 consume(TokenType.COMMA, "Expected ',' in array type");
 
-                String size = parseArraySize(); // Parse array size
+                ExpressionNode size = parseArraySize(); // Parse array size
 
                 consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
-                return "[" + elementType + ", " + size + "]";
+                return new ArrayTypeNode(elementType, size);
             }
 
             // Base case: handle single array
-            Token elementType = consume(TokenType.IDENTIFIER, "Expected array element type");
+            TypeNode elementType = new TypeNode(consume(TokenType.IDENTIFIER, "Expected array element type").getValue());
             consume(TokenType.COMMA, "Expected ',' in array type");
 
-            String size = parseArraySize(); // Parse array size
+            ExpressionNode size = parseArraySize(); // Parse array size
 
             consume(TokenType.RIGHT_BRACKET, "Expected ']' after array size");
-            return "[" + elementType.getValue() + ", " + size + "]";
+            return new ArrayTypeNode(elementType, size);
         }
 
         // Parse pointer type ^basetype
         if (check(TokenType.CARET)) {
             advance();
-            String baseType = parseType();
-            return baseType + "^";
+            TypeNode baseType = parseType();
+            return new PointerTypeNode(baseType);
         }
 
         // Parse primitive or complex type (non-array)
-        return consume(TokenType.IDENTIFIER, "Expected type name").getValue();
+        return new TypeNode(consume(TokenType.IDENTIFIER, "Expected type name").getValue());
     }
 
-    private String parseArraySize() {
+    private ExpressionNode parseArraySize() {
         if (check(TokenType.LEFT_BRACKET)) {
             return parseType(); // Handle nested array size
-        } else if (check(TokenType.IDENTIFIER) || check(TokenType.INTEGER)) {
+        } else {
             // Use ExpressionParser to parse more complex expressions (e.g., function calls, identifiers, literals)
             ExpressionParser expressionParser = new ExpressionParser(tokens, current);
             ExpressionNode expression = expressionParser.parseExpression(current);
             this.current = expressionParser.getCurrent(); // Update current position
-            return expression.toString(); // Convert the parsed expression to a string representation
-        } else {
-            throw new SyntaxError("Expected array size");
+            return expression;
         }
     }
+
 
     private FunctionDeclarationNode parseFunctionDeclaration() {
         consume(TokenType.FUNC, "Expected 'func' keyword at the beginning of the function declaration");
@@ -163,7 +165,7 @@ public class DeclarationParser {
 
         // Parse the return type
         consume(TokenType.ARROW, "Expected '->' after parameter list");
-        String returnType = parseType();
+        TypeNode returnType = parseType();
 
         // Parse the function body
         BlockStatementNode body = statementParser.parseBlock(current);
@@ -190,7 +192,7 @@ public class DeclarationParser {
     private ParameterNode parseParameter() {
         Token name = consume(TokenType.IDENTIFIER, "Expected parameter name");
         consume(TokenType.COLON, "Expected ':' after parameter name");
-        String type = parseType();
+        TypeNode type = parseType();
         return new ParameterNode(name.getValue(), type);
     }
 

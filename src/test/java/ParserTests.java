@@ -155,14 +155,14 @@ public class ParserTests {
                     set age: int;
                 }
                 
-                set p: Person = {"John", 25};
-                set p2: Person = {p.name, p.age};
-                set p3: Person = {p2.name, p2.age};
+                set p: Person = new Person("John", 25);
+                set p2: Person = new Person(p.name, p.age);
+                set p3: Person = new Person(p2.name, p2.age);
                 """
         );
 
         List<Token> tokens = lexer.tokenize();
-        //printTokens(tokens);
+        printTokens(tokens);
 
         Parser parser = new Parser(tokens);
     }

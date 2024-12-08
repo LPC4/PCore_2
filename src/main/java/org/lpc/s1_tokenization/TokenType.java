@@ -2,7 +2,7 @@ package org.lpc.s1_tokenization;
 
 public enum TokenType {
     // Keywords
-    PROGRAM, CONST, SET, FUNC, RETURN, IF, ELSE, WHILE, DO, FOR, ARROW,
+    PROGRAM, CONST, SET, FUNC, RETURN, IF, ELSE, WHILE, DO, FOR, ARROW, NEW,
 
     ALLOC, FREE,
 

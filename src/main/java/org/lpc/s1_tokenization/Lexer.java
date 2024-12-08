@@ -191,6 +191,7 @@ public class Lexer {
             case "true", "false" -> TokenType.BOOLEAN;
             case "struct" -> TokenType.STRUCT;
             case "null" -> TokenType.NULL;
+            case "new" -> TokenType.NEW;
 
             default -> TokenType.IDENTIFIER;
         };

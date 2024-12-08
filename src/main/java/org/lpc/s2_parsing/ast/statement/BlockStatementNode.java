@@ -1,9 +1,12 @@
 package org.lpc.s2_parsing.ast.statement;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class BlockStatementNode extends StatementNode {
-    List<StatementNode> statements;
+    private final List<StatementNode> statements;
 
     public BlockStatementNode(List<StatementNode> statements) {
         this.statements = statements;

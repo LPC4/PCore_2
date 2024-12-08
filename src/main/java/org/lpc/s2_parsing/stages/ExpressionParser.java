@@ -125,26 +125,37 @@ public class ExpressionParser {
             return parseArray();
         }
 
+        // Struct
+        if (check(TokenType.NEW)) {
+            // new struct(a, b, c);
+            return parseStructCreation();
+        }
+
         // Identifier
         if (check(TokenType.IDENTIFIER)) {
-            Token identifierToken = advance();
+            Token identifierToken = advance(); // Consume the identifier
 
             // Function call
             if (check(TokenType.LEFT_PAREN)) {
-                //System.out.println("Function call detected");
                 ExpressionNode callee = new IdentifierNode(identifierToken.getValue());
                 return parseFunctionCall(callee);
             }
+
             // Assignment
             if (check(TokenType.EQUAL)) {
-                //System.out.println("Assignment detected");
                 advance();
                 ExpressionNode value = parseExpression(current);
                 return new VariableExpressionNode(identifierToken.getValue(), value);
             }
 
-            // Identifier
-            return new IdentifierNode(identifierToken.getValue());
+            // Handle struct field access
+            ExpressionNode expr = new IdentifierNode(identifierToken.getValue());
+            while (match(TokenType.DOT)) {
+                Token fieldToken = consume(TokenType.IDENTIFIER, "Expected field name after '.'");
+                expr = new StructFieldAccessNode(expr, fieldToken.getValue());
+            }
+
+            return expr;
         }
 
         // Grouping
@@ -156,32 +167,45 @@ public class ExpressionParser {
 
         // Pointer dereference
         if (check(TokenType.CARET)) {
-            //System.out.println("Pointer dereference detected");
             advance();
             return new PointerDereferenceNode(parsePrimary());
         }
+
         // Pointer address-of
         if (check(TokenType.AMPERSAND)) {
-            //System.out.println("Pointer address-of detected");
             advance();
             return new AddressOfNode(parsePrimary());
         }
 
         // Memory free
         if (check(TokenType.FREE)) {
-            //System.out.println("Free detected");
             advance();
             return parseMemoryFree();
         }
+
         // Memory allocation
         if (check(TokenType.ALLOC)) {
-            //System.out.println("Malloc detected");
             advance();
             return parseMemoryAllocation();
         }
 
-
         throw new RuntimeException("Unexpected token: " + peek().getValue());
+    }
+
+    private StructCreationNode parseStructCreation() {
+        consume(TokenType.NEW, "Expect 'new' keyword");
+        Token structName = consume(TokenType.IDENTIFIER, "Expect struct name after 'new'");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after struct name");
+
+        List<ExpressionNode> arguments = new ArrayList<>();
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                arguments.add(parseExpression(current));
+            } while (match(TokenType.COMMA));
+        }
+
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after struct arguments");
+        return new StructCreationNode(structName.getValue(), arguments);
     }
 
     private ExpressionNode parseMemoryAllocation() {
@@ -198,7 +222,7 @@ public class ExpressionParser {
         return new MemoryFreeNode(pointer);
     }
 
-    private ExpressionNode parseArray() {
+    private ArrayNode parseArray() {
         List<ExpressionNode> elements = new ArrayList<>();
         consume(TokenType.LEFT_BRACE, "Expect '{' before array elements");
         if (!check(TokenType.RIGHT_BRACE)) {

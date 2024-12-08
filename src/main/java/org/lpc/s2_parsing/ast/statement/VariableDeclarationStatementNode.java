@@ -25,7 +25,7 @@ public class VariableDeclarationStatementNode extends StatementNode {
     public String toString(int depth) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append(indent(depth)).append("VariableDeclaration(").append(name).append(")").append(isConst ? " const" : "").append(" type: ").append(type);
+        sb.append(indent(depth)).append("VariableDeclaration(").append(name).append(")").append(isConst ? " const" : "").append(" type: ").append(type.toString(depth + 1));
         if (initializer != null) {
             sb.append(indent(depth + 1)).append(initializer.toString(depth + 1));
         } else {

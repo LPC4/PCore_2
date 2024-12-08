@@ -8,6 +8,9 @@ import org.lpc.s2_parsing.ast.expression.type.ArrayTypeNode;
 import org.lpc.s2_parsing.ast.expression.type.PointerTypeNode;
 import org.lpc.s2_parsing.ast.expression.type.TypeNode;
 import org.lpc.s2_parsing.ast.statement.BlockStatementNode;
+import org.lpc.s2_parsing.ast.statement.StatementNode;
+import org.lpc.s2_parsing.ast.statement.StructFieldNode;
+import org.lpc.s2_parsing.ast.statement.VariableDeclarationStatementNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -206,10 +209,19 @@ public class DeclarationParser {
         BlockStatementNode body = statementParser.parseBlock(current);
         current = statementParser.getCurrent();
 
-        return new StructDeclarationNode(name.getValue(), body);
+        List<StatementNode> statements = body.getStatements();
+        List<StructFieldNode> fields = new ArrayList<>();
+
+        for (StatementNode statement : statements) {
+            if (statement instanceof VariableDeclarationStatementNode variableDeclaration) {
+                fields.add(new StructFieldNode(variableDeclaration.getName(), variableDeclaration.getType()));
+            } else {
+                throw new SyntaxError("Struct body can only contain variable declarations");
+            }
+        }
+
+        return new StructDeclarationNode(name.getValue(), fields);
     }
-
-
 
     // Other helper methods...
 

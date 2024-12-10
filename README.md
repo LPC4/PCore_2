@@ -1,7 +1,3 @@
-Here’s an updated README for your PCore_2 compiler project, focusing on how the compiler parses to an AST and the structure of the PCore language:
-
----
-
 # PCore_2 Compiler
 
 Welcome to the PCore_2 project! This repository is dedicated to developing a parser for the custom PCore language, written in Java. The current goal is to parse PCore code into an Abstract Syntax Tree (AST), though it doesn't compile to executable code yet.

@@ -32,7 +32,6 @@ public class Main {
     }
 
     public static void printTokens(List<Token> tokens) {
-        // print value : type with same indentation
         int maxTokenLength = tokens.stream().mapToInt(token -> token.getValue().length()).max().orElse(0);
         for (Token token : tokens) {
             String value = token.getValue();

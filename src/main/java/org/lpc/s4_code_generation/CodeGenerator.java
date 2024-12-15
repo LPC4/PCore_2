@@ -4,6 +4,7 @@ import org.lpc.s2_parsing.ast.ProgramNode;
 
 public class CodeGenerator {
     public void generate(ProgramNode program) {
-        System.out.println("Generating code for program: " + program.getName());
+        LLVMCodeGenerator llvmCodeGenerator = new LLVMCodeGenerator();
+        llvmCodeGenerator.generate();
     }
 }
